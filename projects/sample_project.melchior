@@ -1,0 +1,80 @@
+# vim:ft=json
+{
+  "app": {
+    "theme": "dark",
+    "lastedit": 0,
+    "nedit": 1,
+    "editor": {
+      "show_opengl_error": true,
+      "log_file": "console.log",
+      "error_log_file": "error.log",
+      "log_level": "error"
+    }
+  },
+  "settings": {
+    "version": 0.01,
+    "name": "test appj"
+  },
+  "models": [
+    {
+      "name": "car",
+      "url": "https://github.com/20niship/movutl-sample-data/raw/main/models/car.glb"
+    },
+    {
+      "name": "ground",
+      "primitive": [
+        {
+          "type": "box",
+          "size": [
+            10,
+            10,
+            1
+          ]
+        }
+      ],
+      "child": []
+    }
+  ],
+  "scenes": [
+    {
+      "name": "default",
+      "models": [
+        {
+          "name": "car"
+        },
+        {
+          "name": "ground"
+        }
+      ],
+      "lights": []
+    }
+  ],
+  "materials": [
+    {
+      "name": "normal-view",
+      "diffuse": "#ff00ff",
+      "specular": "#ff00ff",
+      "hogehoge": "#ff00ff",
+      "emission": "#ff00ff",
+      "shiness":1.0,
+      "strength":1.0,
+      "metaric":1.0,
+      "roughness":0.0,
+      "wireframe":false,
+      "use-cubemap":false,
+      "normal-factor": 1.0,
+      "default-color-factor": 0.0
+    }
+  ],
+  "plugins": [],
+  "sources": [
+    {
+      "path": "hogehoge.lua",
+      "script": ""
+    },
+    {
+      "path": "hogehoge.lua",
+      script":""
+    }
+  ]
+}

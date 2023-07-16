@@ -1,0 +1,75 @@
+.all{
+  font-size: 12px;
+  padding: 6 4;
+  margin: 4 2;
+  spacing: 1;
+  border: none;
+
+  /* デフォルトのウィジェットの高さをこのサイズで共通化する */
+  height: 18;
+
+  color: #ccc;/*　文字色 */
+  subcolor: #aaa; /* 薄い文字色(キャプション等に使われる) */
+
+  /*　アイコン色 */
+  icon-color: #aaa;
+
+  /*全体のスケール */
+  scale: 1.0;
+
+  /* ui_treenodeなどのデフォルトのインデント */
+  indent: 20;
+  titlebar-height: 20;
+  default-height: 14;
+
+  border-radius: 10;
+}
+
+/* チェックボックスの中やテキストボックスの中などの色*/
+.input{
+  background: #225;
+  focus: #33c;
+  color: #fff;
+  border: none;
+}
+
+.primary{
+  background: #335;
+  hover: #33c;
+  focus: #33c;
+}
+
+.window{
+  background: #232323;
+  color: #ccc;
+  border: none;
+}
+
+.widget{
+  background: #333;
+  border: none;
+}
+
+
+/* エラー画面 */
+.error{
+  color: #ff0;
+  background: #533;
+  line: #f5a;
+  line-width: 2;
+}
+.warning{
+  color: #ff0;
+  background: #000;
+  border: solid 1px #ff0;
+}
+.notice{
+  color: #0f0;
+  background: #000;
+  border: solid 1px #0f0;
+}
+.debug{
+  color: #00f;
+  background: #000;
+  border: solid 1px #00f;
+}
