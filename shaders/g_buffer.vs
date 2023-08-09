@@ -25,7 +25,6 @@ void main(){
     // gl_Position = proj* view * worldPos;
     gl_Position = proj * model * vec4(position, 1.0);
 
-    Normal.xyz = vec3(1.0, 0.7, 1.0);
     TexCoords = vec2(vuv.x * uvsize.x, vuv.y * uvsize.y);
     vertexColor = color / 255.0;
 }

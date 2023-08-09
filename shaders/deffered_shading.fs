@@ -24,10 +24,6 @@ void main(){
     vec3 Diffuse = texture(gAlbedoSpec, TexCoords).rgb;
     float Specular = texture(gAlbedoSpec, TexCoords).a;
 
-    FragColor.rgb = Diffuse;
-    FragColor.a = 1.0;
-    return;
-    
     // then calculate lighting as usual
     vec3 lighting  = Diffuse * 0.1; // hard-coded ambient component
     vec3 viewDir  = normalize(viewPos - FragPos);
@@ -49,8 +45,9 @@ void main(){
     }
     FragColor = vec4(lighting, 1.0);
 
-    if(Specular < 0.001){
-      FragColor.rgb = Diffuse;
+    // if(Specular < 0.9){
+      FragColor.rgb *=0.01;
+      FragColor.rgb +=Diffuse;
       FragColor.a = 1.0;
-    }
+    // }
 }
