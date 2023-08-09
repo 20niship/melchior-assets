@@ -2,11 +2,12 @@
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 norm;
 layout (location = 2) in vec2 vuv;
-layout (location = 2) in vec3 color;
+layout (location = 3) in vec3 color;
 
 out vec3 FragPos;
 out vec2 TexCoords;
 out vec3 Normal;
+out vec3 vertexColor;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -26,7 +27,7 @@ void main(){
 
     Normal.xyz = vec3(1.0, 0.7, 1.0);
     TexCoords = vec2(vuv.x * uvsize.x, vuv.y * uvsize.y);
-    FragPos = vec3(1.0, 0.7, 1.0);
+    vertexColor = color / 255.0;
 }
 
 

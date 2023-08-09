@@ -2,31 +2,42 @@
 layout (location = 0) out vec3 gPosition;
 layout (location = 1) out vec3 gNormal;
 layout (location = 2) out vec4 gAlbedoSpec;
-layout (location = 3) out vec4 ghoge;
 
 in vec2 TexCoords;
 in vec3 FragPos;
 in vec3 Normal;
+in vec3 vertexColor;
 
 uniform sampler2D texture_diffuse1;
 uniform sampler2D texture_specular1;
 
+struct Material {
+  vec4 diffuse;
+  vec4 specular;
+  float shininess;
+  float default_color_factor;
+  float normal_factor;
+};
+
+uniform Material material;
+uniform vec3 viewPos;
+
 void main(){    
-    // store the fragment position vector in the first gbuffer texture
-    gPosition = FragPos;
-    // also store the per-fragment normals into the gbuffer
-    gNormal = normalize(Normal);
-    // and the diffuse per-fragment color
-    gAlbedoSpec.rgb = texture(texture_diffuse1, TexCoords).rgb;
-    // store specular intensity in gAlbedoSpec's alpha component
-    gAlbedoSpec.a = texture(texture_specular1, TexCoords).r;
+  // store the fragment position vector in the first gbuffer texture
+  gPosition = FragPos;
+  // also store the per-fragment normals into the gbuffer
+  gNormal = normalize(Normal);
+  // and the diffuse per-fragment color
+  gAlbedoSpec.rgb = texture(texture_diffuse1, TexCoords).rgb;
+  // store specular intensity in gAlbedoSpec's alpha component
+  gAlbedoSpec.a = texture(texture_specular1, TexCoords).r;
 
-    gAlbedoSpec.r = 1.0f;
-    gAlbedoSpec.g = 1.0f;
-    gAlbedoSpec.b = 1.0f;
-    gAlbedoSpec.a = 1.0f;
+  gAlbedoSpec.a = 1;
 
-    gNormal.x = 1.0;
-    gPosition.x = 1.0;
-    ghoge.x = 1.0;
+  if(material.default_color_factor > 0.5){
+    gAlbedoSpec.rgb = vertexColor.rgb;
+  }else if(material.normal_factor > 0.4){
+    vec3 normal_color = normalize(Normal.xyz)*0.5 + 0.5;
+    gAlbedoSpec.rgb = normal_color;
+  }
 }
