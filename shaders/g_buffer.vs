@@ -10,7 +10,8 @@ out vec3 Normal;
 
 uniform mat4 model;
 uniform mat4 view;
-uniform mat4 projection;
+uniform mat4 proj;
+uniform vec2 uvsize;
 
 void main(){
     vec4 worldPos = model * vec4(position, 1.0);
@@ -20,13 +21,12 @@ void main(){
     mat3 normalMatrix = transpose(inverse(mat3(model)));
     Normal = normalMatrix * norm;
 
-    gl_Position = projection * view * worldPos;
+    // gl_Position = proj* view * worldPos;
+    gl_Position = proj * model * vec4(position, 1.0);
 
-    gl_Position.x = clamp(position.x*0.001, -1.0, 1.0);
-    gl_Position.y = clamp(position.y*0.001, -1.0, 1.0);
-    gl_Position.z = clamp(color.z / 300.0, -1.0, 1.0);
-
-    Normal.xyz = gl_Position.xyz;
+    Normal.xyz = vec3(1.0, 0.7, 1.0);
+    TexCoords = vec2(vuv.x * uvsize.x, vuv.y * uvsize.y);
+    FragPos = vec3(1.0, 0.7, 1.0);
 }
 
 

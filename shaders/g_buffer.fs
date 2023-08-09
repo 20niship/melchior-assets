@@ -21,6 +21,7 @@ void main(){
     gAlbedoSpec.a = texture(texture_specular1, TexCoords).r;
 
     gAlbedoSpec.r = 1.0f;
+    gAlbedoSpec.g = 1.0f;
     gNormal.x = 1.0;
     gPosition.x = 1.0;
 }
