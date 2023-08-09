@@ -1,6 +1,5 @@
 #version 330 core
 out vec4 FragColor;
-
 in vec2 TexCoords;
 
 uniform sampler2D gPosition;
@@ -8,18 +7,17 @@ uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpec;
 
 struct Light {
-    vec3 Position;
-    vec3 Color;
-    
-    float Linear;
-    float Quadratic;
+  vec3 Position;
+  vec3 Color;
+  float Linear;
+  float Quadratic;
 };
+
 const int NR_LIGHTS = 32;
 uniform Light lights[NR_LIGHTS];
 uniform vec3 viewPos;
 
-void main()
-{             
+void main(){             
     // retrieve data from gbuffer
     vec3 FragPos = texture(gPosition, TexCoords).rgb;
     vec3 Normal = texture(gNormal, TexCoords).rgb;
@@ -46,4 +44,6 @@ void main()
         lighting += diffuse + specular;        
     }
     FragColor = vec4(lighting, 1.0);
+    FragColor.y = Normal.x;
+    FragColor.z = Diffuse.x;
 }
