@@ -2,6 +2,7 @@
 layout (location = 0) out vec3 gPosition;
 layout (location = 1) out vec3 gNormal;
 layout (location = 2) out vec4 gAlbedoSpec;
+layout (location = 3) out vec4 ghoge;
 
 in vec2 TexCoords;
 in vec3 FragPos;
@@ -22,6 +23,10 @@ void main(){
 
     gAlbedoSpec.r = 1.0f;
     gAlbedoSpec.g = 1.0f;
+    gAlbedoSpec.b = 1.0f;
+    gAlbedoSpec.a = 1.0f;
+
     gNormal.x = 1.0;
     gPosition.x = 1.0;
+    ghoge.x = 1.0;
 }
