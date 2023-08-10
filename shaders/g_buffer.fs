@@ -1,8 +1,8 @@
 #version 330 core
-layout (location = 0) out vec3 gPosition;
-layout (location = 1) out vec3 gNormal;
+layout (location = 0) out vec4 gPosition;
+layout (location = 1) out vec4 gNormal;
 layout (location = 2) out vec4 gAlbedoSpec;
-layout (location = 3) out vec3 gParams;
+layout (location = 3) out vec4 gParams;
 
 in vec2 TexCoords;
 in vec3 FragPos;
@@ -24,8 +24,10 @@ uniform Material material;
 uniform vec3 viewPos;
 
 void main(){    
-  gPosition = FragPos;
-  gNormal = normalize(Normal);
+  gPosition.rgb = FragPos;
+  gPosition.a = 1;
+  gNormal.rgb = normalize(Normal);
+  gNormal.a = 1;
 
   bool use_vertex_color = (material.type & 0x01) > 0;
   bool use_normal_color = (material.type & 0x02) > 0;
@@ -41,9 +43,8 @@ void main(){
 
   gParams.r = use_roughness_texture ? texture(texture_roughness, TexCoords).r : material.roughness;
   gParams.g = use_metallic_texture ? texture(texture_metallic, TexCoords).r : material.metallic;
-  gParams.b = (material.type & 0xFF) / 255;
-
-  gNormal = gAlbedoSpec.rgb;
+  gParams.b = (material.type & 0xFF) / 255.0;
+  gParams.a = 1;
 
   if(use_vertex_color){
     gAlbedoSpec.rgb = vertexColor.rgb;

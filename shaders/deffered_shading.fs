@@ -9,7 +9,7 @@ uniform sampler2D gParams;
 
 struct Light {
   vec3 Position;
-  vec3 Color;
+  vec4 Color;
   float intensity;
   float Linear;
   float Quadratic;
@@ -20,7 +20,6 @@ uniform Light lights[NR_LIGHTS];
 uniform vec3 viewPos;
 
 // material parameters
-uniform sampler2D normalMap;
 uniform sampler2D aoMap;
 
 // IBL
@@ -28,9 +27,6 @@ uniform samplerCube irradianceMap;
 uniform samplerCube prefilterMap;
 uniform sampler2D brdfLUT;
 
-// lights
-uniform vec3 lightPositions[4];
-uniform vec3 lightColors[4];
 
 const float PI = 3.14159265359;
 
@@ -43,8 +39,7 @@ vec3 WorldPos;
 // mapping the usual way for performance anyways; I do plan make a note of this 
 // technique somewhere later in the normal mapping tutorial.
 vec3 getNormalFromMap(){
-    vec3 tangentNormal = texture(normalMap, TexCoords).xyz * 2.0 - 1.0;
-
+    vec3 tangentNormal = texture(gNormal, TexCoords).xyz * 2.0 - 1.0;
     vec3 Q1  = dFdx(WorldPos);
     vec3 Q2  = dFdy(WorldPos);
     vec2 st1 = dFdx(TexCoords);
@@ -57,7 +52,7 @@ vec3 getNormalFromMap(){
 
     return normalize(TBN * tangentNormal);
 }
-// ----------------------------------------------------------------------------
+
 float DistributionGGX(vec3 N, vec3 H, float roughness){
     float a = roughness*roughness;
     float a2 = a*a;
@@ -93,11 +88,11 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0){ return F0 + (1.0 - F0) * pow(clamp
 vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness){ return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);}   
 
 
-vec3 calc_light(vec3 light_pos, vec3 light_color, float roughness, vec3 N, vec3 V, vec3 albedo, float metallic, vec3 F0){
+vec3 calc_light(vec3 light_pos, vec3 light_color, float roughness, vec3 N, vec3 V, vec3 albedo, float metallic, vec3 F0, float attenuation){
   vec3 L = normalize(light_pos - WorldPos);
   vec3 H = normalize(V + L);
   float distance = length(light_pos - WorldPos);
-  float attenuation = 1.0 / (distance * distance);
+  // float attenuation = 1.0 / (distance * distance);
   vec3 radiance = light_color * attenuation;
 
   // Cook-Torrance BRDF
@@ -121,7 +116,7 @@ vec3 calc_light(vec3 light_pos, vec3 light_color, float roughness, vec3 N, vec3 
   kD *= 1.0 - metallic;	                
       
   // scale light by NdotL
-  float NdotL = max(dot(N, L), 0.0);        
+  float NdotL = max(dot(N, L), 0.0);
 
   // add to outgoing radiance Lo
   // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
@@ -152,10 +147,13 @@ vec3 main_lighting(){
   vec3 Lo = vec3(0.0);
   for(int i = 0; i < NR_LIGHTS; ++i){
     float distance = length(lights[i].Position - WorldPos);
-    float attenuation = 1.0 / (1.0 + lights[i].Linear * distance + lights[i].Quadratic * distance * distance);
-    vec3 l = calc_light(lights[i].Position, lights[i].Color * lights[i].intensity / 255.0, roughness, N, V, albedo, metallic, F0);
-    Lo += max(l * attenuation, 0);
+  //  float attenuation = 1.0 / (1.0 + lights[i].Linear * distance + lights[i].Quadratic * distance * distance);
+   float attenuation = 1.0 / (distance * distance);
+    vec3 l = calc_light(lights[i].Position, lights[i].Color.rgb*lights[i].intensity , roughness, N, V, albedo, metallic, F0, attenuation);
+    Lo += max(l, 0);
   }
+  return Lo;
+
 
   // ambient lighting (we now use IBL as the ambient term)
   vec3 F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
@@ -174,14 +172,11 @@ vec3 main_lighting(){
   vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
   vec3 ambient = (kD * diffuse + specular) * ao;
+  // vec3 color = ambient + Lo;
+  vec3 color = Lo;
   
-  vec3 color = ambient + Lo;
-
-  // HDR tonemapping
-  color = color / (color + vec3(1.0));
-  // gamma correct
-  color = pow(color, vec3(1.0/2.2)); 
-
+  color = color / (color + vec3(1.0));// HDR tonemapping
+  color = pow(color, vec3(1.0/2.2)); // gamma correct
   return color;
 }
 
@@ -191,24 +186,18 @@ void main(){
   WorldPos = texture(gPosition, TexCoords).rgb;
   Normal = texture(gNormal, TexCoords).rgb;
   vec3 Diffuse = texture(gAlbedoSpec, TexCoords).rgb;
-  float Specular = texture(gParams, TexCoords).a;
 
-  // then calculate lighting as usual
-  vec3 lighting  = Diffuse * 0.1; // hard-coded ambient component
+  vec3 lighting  = Diffuse * 0.3; // hard-coded ambient component
   lighting += main_lighting(); // get lighting using our BRDF function
-  vec3 viewDir  = normalize(viewPos - WorldPos);
   FragColor = vec4(lighting, 1.0);
-
-  int type = int(texture(gParams, TexCoords).b);
+  int type = int(texture(gParams, TexCoords).b * 255.0);
   bool use_vertex_color = (type & 0x01) > 0;
   bool use_normal_color = (type & 0x02) > 0;
   bool use_uv_color     = (type & 0x03) > 0;
   bool use_index_color  = (type & 0x04) > 0;
 
-    FragColor.rgb = Diffuse;
   if(use_vertex_color || use_normal_color || use_uv_color || use_index_color){
-    FragColor.rgb = Diffuse;
-    FragColor.rgb = vec3(1.0);
+   FragColor.rgb = Diffuse;
   }
   FragColor.a = 1.0;
 }
