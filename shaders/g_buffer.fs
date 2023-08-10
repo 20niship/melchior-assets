@@ -41,7 +41,9 @@ void main(){
 
   gParams.r = use_roughness_texture ? texture(texture_roughness, TexCoords).r : material.roughness;
   gParams.g = use_metallic_texture ? texture(texture_metallic, TexCoords).r : material.metallic;
-  gParams.b = material.type & 0xFF;
+  gParams.b = (material.type & 0xFF) / 255;
+
+  gNormal = gAlbedoSpec.rgb;
 
   if(use_vertex_color){
     gAlbedoSpec.rgb = vertexColor.rgb;
