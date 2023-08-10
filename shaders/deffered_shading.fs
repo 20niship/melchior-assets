@@ -18,6 +18,7 @@ const int NR_LIGHTS = 32;
 uniform Light lights[NR_LIGHTS];
 uniform vec3 viewPos;
 
+
 void main(){             
     // retrieve data from gbuffer
     vec3 FragPos = texture(gPosition, TexCoords).rgb;
@@ -26,7 +27,7 @@ void main(){
     float Specular = texture(gParams, TexCoords).a;
 
     // then calculate lighting as usual
-    vec3 lighting  = Diffuse * 0.1; // hard-coded ambient component
+    vec3 lighting  = Diffuse * 0.3; // hard-coded ambient component
     vec3 viewDir  = normalize(viewPos - FragPos);
     for(int i = 0; i < NR_LIGHTS; ++i)
     {
@@ -46,9 +47,14 @@ void main(){
     }
     FragColor = vec4(lighting, 1.0);
 
-    // if(Specular < 0.9){
-      FragColor.rgb *=0.01;
-      FragColor.rgb +=Diffuse;
-      FragColor.a = 1.0;
-    // }
+    int type = int(texture(gParams, TexCoords).b);
+    bool use_vertex_color = (type & 0x01) > 0;
+    bool use_normal_color = (type & 0x02) > 0;
+    bool use_uv_color     = (type & 0x03) > 0;
+    bool use_index_color  = (type & 0x04) > 0;
+
+    if(use_vertex_color || use_normal_color || use_uv_color || use_index_color){
+      FragColor.rgb = Diffuse;
+    }
+    FragColor.a = 1.0;
 }
