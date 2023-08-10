@@ -19,7 +19,6 @@ const int NR_LIGHTS = 32;
 uniform Light lights[NR_LIGHTS];
 uniform vec3 viewPos;
 
-// material parameters
 uniform sampler2D aoMap;
 
 // IBL
