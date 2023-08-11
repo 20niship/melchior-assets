@@ -46,6 +46,7 @@ void main(){
   float metallic = use_metallic_texture ? texture(texture_metallic, TexCoords).r : material.metallic;
 
   FragColor = vec4(diffuse, 1.0);
+  FragColor.r += metallic*0.001 + roughness*0.001;
 
   if(use_vertex_color){
     FragColor.rgb = vertexColor.rgb;
