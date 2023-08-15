@@ -194,8 +194,9 @@ void main(){
   bool use_normal_color = (type & 0x02) > 0;
   bool use_uv_color     = (type & 0x03) > 0;
   bool use_index_color  = (type & 0x04) > 0;
+  bool force_base_color = (type & 0x06) > 0;
 
-  if(use_vertex_color || use_normal_color || use_uv_color || use_index_color){
+  if(use_vertex_color || use_normal_color || use_uv_color || use_index_color || force_base_color){
    FragColor.rgb = Diffuse;
   }
   FragColor.a = 1.0;

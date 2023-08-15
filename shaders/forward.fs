@@ -31,15 +31,18 @@ in float cutting_plane_dist;
 
 out vec4 FragColor;
 
-void main(){    
-  bool use_vertex_color = (material.type & 0x01) > 0;
-  bool use_normal_color = (material.type & 0x02) > 0;
-  bool use_uv_color     = (material.type & 0x03) > 0;
-  bool use_index_color  = (material.type & 0x04) > 0;
+void main(){
+  uint type = material.type;
+  uint lower= type & 0xF;  // 下位4ビットを取り出す
+  bool use_vertex_color = lower == 1;
+  bool use_normal_color = lower == 2;
+  bool use_uv_color     = lower == 3;
+  bool use_index_color  = lower == 4;
+  bool force_base_color = lower == 6;
 
-  bool use_diffuse_texture   = (material.type & (1 << 10)) > 0;
-  bool use_metallic_texture  = (material.type & (1 << 11)) > 0;
-  bool use_roughness_texture = (material.type & (1 << 12)) > 0;
+  bool use_diffuse_texture   = (type & (1 << 10)) > 0;
+  bool use_metallic_texture  = (type & (1 << 11)) > 0;
+  bool use_roughness_texture = (type & (1 << 12)) > 0;
 
   vec3 diffuse = use_diffuse_texture ?  texture(texture_diffuse, TexCoords).rgb : material.diffuse.rgb;
   float roughness  = use_roughness_texture ? texture(texture_roughness, TexCoords).r : material.roughness;
