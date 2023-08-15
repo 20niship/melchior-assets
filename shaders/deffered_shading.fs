@@ -146,8 +146,8 @@ vec3 main_lighting(){
   vec3 Lo = vec3(0.0);
   for(int i = 0; i < NR_LIGHTS; ++i){
     float distance = length(lights[i].Position - WorldPos);
-  //  float attenuation = 1.0 / (1.0 + lights[i].Linear * distance + lights[i].Quadratic * distance * distance);
-   float attenuation = 1.0 / (distance * distance);
+   float attenuation = 1.0 / (1.0 + lights[i].Linear * distance + lights[i].Quadratic * distance * distance);
+    //float attenuation = 1.0 / (distance * distance);
     vec3 l = calc_light(lights[i].Position, lights[i].Color.rgb*lights[i].intensity , roughness, N, V, albedo, metallic, F0, attenuation);
     Lo += max(l, 0);
   }
