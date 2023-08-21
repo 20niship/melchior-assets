@@ -9,10 +9,22 @@ out vec2 TexCoords;
 out vec3 Normal;
 out vec3 vertexColor;
 
+out vec4 vert_index;
+
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 proj;
 uniform vec2 uvsize;
+
+uniform int mesh_index;
+
+vec3 unpackColor(int f){
+  vec3 color;
+  color.r = floor(f / 65536);
+  color.g = floor((f - color.r * 65536) / 256.0);
+  color.b = floor(f - color.r * 65536 - color.g * 256.0);
+  return color / 255.0;
+}
 
 void main(){
     vec4 worldPos = model * vec4(position, 1.0);
@@ -26,6 +38,8 @@ void main(){
 
     TexCoords = vuv;
     vertexColor = color / 255.0;
+
+    vert_index= vec4(unpackColor(gl_VertexID).rgb, mesh_index);
 }
 
 

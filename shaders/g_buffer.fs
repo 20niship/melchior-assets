@@ -3,11 +3,13 @@ layout (location = 0) out vec4 gPosition;
 layout (location = 1) out vec4 gNormal;
 layout (location = 2) out vec4 gAlbedoSpec;
 layout (location = 3) out vec4 gParams;
+layout (location = 4) out vec4 gVertIndex;
 
 in vec2 TexCoords;
 in vec3 FragPos;
 in vec3 Normal;
 in vec3 vertexColor;
+in vec4 vert_index;
 
 uniform sampler2D texture_diffuse;
 uniform sampler2D texture_metallic;
@@ -24,6 +26,8 @@ uniform Material material;
 uniform vec3 viewPos;
 
 void main(){    
+  gVertIndex = vec4(vert_index.xyz, 1);
+
   gPosition.rgb = FragPos;
   gPosition.a = 1;
   gNormal.rgb = normalize(Normal);
