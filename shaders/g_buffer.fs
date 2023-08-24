@@ -37,6 +37,7 @@ void main(){
   bool use_normal_color = (material.type & 0x02) > 0;
   bool use_uv_color     = (material.type & 0x03) > 0;
   bool use_index_color  = (material.type & 0x04) > 0;
+  bool force_base_color = (material.type & 0x06) > 0;
 
   bool use_diffuse_texture   = (material.type & (1 << 10)) > 0;
   bool use_metallic_texture  = (material.type & (1 << 11)) > 0;
@@ -49,6 +50,8 @@ void main(){
   gParams.g = use_metallic_texture ? texture(texture_metallic, TexCoords).r : material.metallic;
   gParams.b = (material.type & 0xFF) / 255.0;
   gParams.a = 1;
+
+  if(force_base_color) return;
 
   if(use_vertex_color){
     gAlbedoSpec.rgb = vertexColor.rgb;
