@@ -25,6 +25,14 @@ struct Material {
 uniform Material material;
 uniform vec3 viewPos;
 
+struct CuttingPlane{
+  vec3 norm;
+  vec3 pos;
+  int enabled;
+};
+uniform CuttingPlane plane_clipping;
+in float cutting_plane_dist;
+
 void main(){    
   gVertIndex = vec4(vert_index.xyz, 1);
 
@@ -51,12 +59,23 @@ void main(){
   gParams.b = (material.type & 0xFF) / 255.0;
   gParams.a = 1;
 
-  if(force_base_color) return;
-
-  if(use_vertex_color){
-    gAlbedoSpec.rgb = vertexColor.rgb;
-  }else if(use_normal_color){
-    vec3 normal_color = normalize(Normal.xyz)*0.5 + 0.5;
-    gAlbedoSpec.rgb = normal_color;
+  if(!force_base_color){
+    if(use_vertex_color){
+      gAlbedoSpec.rgb = vertexColor.rgb;
+    }else if(use_normal_color){
+      vec3 normal_color = normalize(Normal.xyz)*0.5 + 0.5;
+      gAlbedoSpec.rgb = normal_color;
+    }
   }
+
+  if(plane_clipping.enabled > 0){
+    if(abs(cutting_plane_dist) < 0.03){
+      gAlbedoSpec.rgb = vec3(0,1,1);
+      gAlbedoSpec.a = 1.0;
+    }else if(cutting_plane_dist > 0){
+      gAlbedoSpec.a = 0.0;
+      discard; // このフラグメントを破棄
+    }
+  }
+
 }

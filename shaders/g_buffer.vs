@@ -10,6 +10,7 @@ out vec3 Normal;
 out vec3 vertexColor;
 
 out vec4 vert_index;
+out float cutting_plane_dist;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -17,6 +18,13 @@ uniform mat4 proj;
 uniform vec2 uvsize;
 
 uniform int mesh_index;
+
+struct CuttingPlane{
+  vec3 norm;
+  vec3 pos;
+  int enabled;
+};
+uniform CuttingPlane plane_clipping;
 
 vec3 unpackColor(float f){
   vec3 color;
@@ -40,6 +48,7 @@ void main(){
     vertexColor = color / 255.0;
 
     vert_index= vec4(unpackColor(float(gl_VertexID)).rgb, mesh_index);
+    cutting_plane_dist = dot(plane_clipping.norm, position - plane_clipping.pos);
 }
 
 
