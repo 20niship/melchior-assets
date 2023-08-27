@@ -17,7 +17,7 @@ uniform mat4 view;
 uniform mat4 proj;
 uniform vec2 uvsize;
 
-uniform int mesh_index;
+uniform float mesh_index;
 
 struct CuttingPlane{
   vec3 norm;
@@ -47,7 +47,7 @@ void main(){
     TexCoords = vuv;
     vertexColor = color / 255.0;
 
-    vert_index= vec4(unpackColor(float(gl_VertexID)).rgb, mesh_index);
+    vert_index= vec4(unpackColor(float(gl_VertexID)).rgb, mesh_index / 255.0);
     cutting_plane_dist = dot(plane_clipping.norm, position - plane_clipping.pos);
 }
 

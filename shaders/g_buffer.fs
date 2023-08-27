@@ -34,7 +34,7 @@ uniform CuttingPlane plane_clipping;
 in float cutting_plane_dist;
 
 void main(){    
-  gVertIndex = vec4(vert_index.xyz, 1);
+  gVertIndex = vert_index;
 
   gPosition.rgb = FragPos;
   gPosition.a = 1;
