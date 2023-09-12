@@ -1,4 +1,4 @@
-#version 450
+#version 330
 
 uniform sampler2D texture_diffuse;
 uniform sampler2D texture_metallic;
