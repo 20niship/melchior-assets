@@ -14,6 +14,14 @@ uniform mat4 view;
 uniform mat4 proj;
 uniform vec2 uvsize;
 
+struct CuttingPlane{
+  vec3 norm;
+  vec3 pos;
+  int enabled;
+};
+uniform CuttingPlane plane_clipping;
+out float cutting_plane_dist;
+
 void main(){
     vec4 worldPos = model * vec4(position, 1.0);
     FragPos = worldPos.xyz; 
@@ -26,6 +34,7 @@ void main(){
 
     TexCoords = vuv;
     vertexColor = color / 255.0;
+    cutting_plane_dist = dot(plane_clipping.norm, position - plane_clipping.pos);
 }
 
 

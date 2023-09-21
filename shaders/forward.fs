@@ -24,7 +24,7 @@ in vec3 vertexColor;
 struct CuttingPlane{
   vec3 norm;
   vec3 pos;
-  float enabled;
+  int  enabled;
 };
 uniform CuttingPlane plane_clipping;
 in float cutting_plane_dist;
@@ -58,5 +58,15 @@ void main(){
     FragColor.rgb = normal_color;
   }else if(use_uv_color){
     FragColor.rgb = vec3(TexCoords, 0.0);
+  }
+
+  if(plane_clipping.enabled > 0){
+    if(abs(cutting_plane_dist) < 0.03){
+      FragColor.rgb = vec3(0,1,1);
+      FragColor.a = 1.0;
+    }else if(cutting_plane_dist > 0){
+      FragColor.a = 0.0;
+      discard; // このフラグメントを破棄
+    }
   }
 }
