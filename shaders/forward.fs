@@ -157,8 +157,7 @@ vec3 main_lighting(vec3 base_color, float roughness, float metallic, float ao){
     vec3 l = calc_light(lights[i].Position, lights[i].Color.rgb*lights[i].intensity , roughness, N, V, albedo, metallic, F0, attenuation);
     Lo += max(l, 0);
   }
-  return Lo;
-
+  // return Lo;
 
   // ambient lighting (we now use IBL as the ambient term)
   vec3 F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
@@ -172,11 +171,12 @@ vec3 main_lighting(vec3 base_color, float roughness, float metallic, float ao){
   
   // sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
   const float MAX_REFLECTION_LOD = 4.0;
-  vec3 prefilteredColor = textureLod(prefilterMap, R,  roughness * MAX_REFLECTION_LOD).rgb;    
+  vec3 prefilteredColor = textureLod(prefilterMap, R, roughness * MAX_REFLECTION_LOD).rgb;    
   vec2 brdf  = texture(brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
   vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
-  vec3 ambient = (kD * diffuse + specular) * ao;
+  // Lo += (kD * diffuse + specular) * ao;
+
   // vec3 color = ambient + Lo;
   vec3 color = Lo;
   
