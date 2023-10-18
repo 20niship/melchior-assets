@@ -24,6 +24,7 @@ uniform Material material;
 uniform vec3 viewPos;
 struct Light {
   vec3 Position;
+  vec3 Normal;
   vec4 Color;
   float intensity;
   float Linear;
@@ -32,7 +33,9 @@ struct Light {
 
 struct Shading{
   int type;
-  Light studio_light;
+  vec3 studio_light_normal;
+  vec3 studio_light_specular;
+  float studio_light_shininess;
   vec3 wireframe_color;
   float ambient;
 };
@@ -211,6 +214,24 @@ vec3 depthmap(float depth){
   return color;
 }
 
+vec3 phone_lighting(vec3 diffuse ){
+  vec3 spec = vec3(0.0);
+  vec3 n = normalize(Normal);
+  vec3 l = normalize(shading.studio_light_normal);
+  vec3 e = normalize(viewPos);
+
+  float intensity = max(dot(n,l), 0.0);
+  if (intensity > 0.0) {
+      vec3 h = normalize(l + e);
+      float intSpec = max(dot(h,n), 0.0);
+      spec = shading.studio_light_specular * pow(intSpec, shading.studio_light_shininess);
+  }
+
+  vec3 colorOut = intensity * diffuse + spec;
+  return colorOut;
+}
+
+
 void main(){
   uint type = material.type;
   uint lower= type & 0xF;  // 下位4ビットを取り出す
@@ -232,12 +253,17 @@ void main(){
   // FragColor = vec4(diffuse, 1.0);
   FragColor.rgb = main_lighting(diffuse, roughness, metallic, 1.0);
   FragColor.rgb += diffuse * shading.ambient;
+
+  if(shading.type == SHADING_SOLID){
+    FragColor.rgb += phone_lighting(diffuse);
+  }
+
   if(force_base_color || shading.type== SHADING_PLANE) FragColor.rgb = diffuse;
   FragColor.a = 1.0;
 
   if(use_vertex_color){
     FragColor.rgb = vertexColor.rgb;
-  }else if(use_normal_color){
+  }if(use_normal_color){
     vec3 normal_color = normalize(Normal.xyz)*0.5 + 0.5;
     FragColor.rgb = normal_color;
   }else if(use_uv_color){
