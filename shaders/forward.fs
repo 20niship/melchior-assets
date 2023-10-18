@@ -33,6 +33,7 @@ struct Light {
 struct Shading{
   int type;
   Light studio_light;
+  vec3 wireframe_color;
   float ambient;
 };
 uniform Shading shading;
@@ -244,6 +245,10 @@ void main(){
   }else if(use_depth_color){
     float depth = gl_FragCoord.z / gl_FragCoord.w / 100.0;
     FragColor.rgb = depthmap(depth);
+  }
+
+  if(shading.type == SHADING_WIREFRAME){
+    FragColor.rgb = shading.wireframe_color;
   }
 
   if(plane_clipping.enabled > 0){
