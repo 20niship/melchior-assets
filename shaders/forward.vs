@@ -34,7 +34,7 @@ void main(){
 
     TexCoords = vuv;
     vertexColor = color / 255.0;
-    cutting_plane_dist = dot(plane_clipping.norm, position - plane_clipping.pos);
+    cutting_plane_dist = dot(plane_clipping.norm, worldPos.xyz - plane_clipping.pos);
 }
 
 

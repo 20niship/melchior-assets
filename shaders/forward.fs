@@ -1,5 +1,15 @@
 #version 420
 
+const int SHADING_WIREFRAME = 1;
+const int SHADING_PLANE = 2;
+const int SHADING_SOLID = 3;
+const int SHADING_NORMAL = 4;
+const int SHADING_DEPTH = 5;
+const int SHADING_UV= 6;
+const int SHADING_INDEX = 7;
+const int SHADING_RENDERED = 8;
+const int SHADING_CUSTOM = 9;
+
 uniform sampler2D texture_diffuse;
 uniform sampler2D texture_metallic;
 uniform sampler2D texture_roughness;
@@ -19,6 +29,13 @@ struct Light {
   float Linear;
   float Quadratic;
 };
+
+struct Shading{
+  int type;
+  Light studio_light;
+  float ambient;
+};
+uniform Shading shading;
 
 const int NR_LIGHTS = 32;
 uniform Light lights[NR_LIGHTS];
@@ -185,13 +202,22 @@ vec3 main_lighting(vec3 base_color, float roughness, float metallic, float ao){
   return color;
 }
 
+// jet colormap
+vec3 depthmap(float depth){
+  vec3 color = vec3(0.0);
+  color.r = depth;
+  color.g = 1.0 - depth;
+  return color;
+}
+
 void main(){
   uint type = material.type;
   uint lower= type & 0xF;  // 下位4ビットを取り出す
   bool use_vertex_color = lower == 1;
-  bool use_normal_color = lower == 2;
-  bool use_uv_color     = lower == 3;
-  bool use_index_color  = lower == 4;
+  bool use_normal_color = lower == 2 || shading.type == SHADING_NORMAL;
+  bool use_depth_color  = shading.type == SHADING_DEPTH;
+  bool use_uv_color     = lower == 3 || shading.type == SHADING_UV;
+  bool use_index_color  = lower == 4 || shading.type == SHADING_INDEX;
   bool force_base_color = lower == 6;
 
   bool use_diffuse_texture   = (type & (1 << 10)) > 0;
@@ -204,7 +230,8 @@ void main(){
 
   // FragColor = vec4(diffuse, 1.0);
   FragColor.rgb = main_lighting(diffuse, roughness, metallic, 1.0);
-  if(force_base_color) FragColor.rgb = diffuse;
+  FragColor.rgb += diffuse * shading.ambient;
+  if(force_base_color || shading.type== SHADING_PLANE) FragColor.rgb = diffuse;
   FragColor.a = 1.0;
 
   if(use_vertex_color){
@@ -214,6 +241,9 @@ void main(){
     FragColor.rgb = normal_color;
   }else if(use_uv_color){
     FragColor.rgb = vec3(TexCoords, 0.0);
+  }else if(use_depth_color){
+    float depth = gl_FragCoord.z / gl_FragCoord.w / 100.0;
+    FragColor.rgb = depthmap(depth);
   }
 
   if(plane_clipping.enabled > 0){
