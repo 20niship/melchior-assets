@@ -251,7 +251,11 @@ void main(){
   float metallic = use_metallic_texture ? texture(texture_metallic, TexCoords).r : material.metallic;
 
   // FragColor = vec4(diffuse, 1.0);
+#ifdef MELCHIOR_PLATFORM_MACOS
+  FragColor.rgb = vec3(0.0);
+#else
   FragColor.rgb = main_lighting(diffuse, roughness, metallic, 1.0);
+#endif
   FragColor.rgb += diffuse * shading.ambient;
 
   if(shading.type == SHADING_SOLID){
