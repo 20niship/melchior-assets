@@ -1,4 +1,4 @@
-#version 420
+#version 410
 
 const int SHADING_WIREFRAME = 1;
 const int SHADING_PLANE = 2;
@@ -234,7 +234,7 @@ vec3 phone_lighting(vec3 diffuse ){
 
 void main(){
   uint type = material.type;
-  uint lower= type & 0xF;  // 下位4ビットを取り出す
+  uint lower= type & uint(0xF);  // 下位4ビットを取り出す
   bool use_vertex_color = lower == 1;
   bool use_normal_color = lower == 2 || shading.type == SHADING_NORMAL;
   bool use_depth_color  = shading.type == SHADING_DEPTH;
@@ -242,9 +242,9 @@ void main(){
   bool use_index_color  = lower == 4 || shading.type == SHADING_INDEX;
   bool force_base_color = lower == 6;
 
-  bool use_diffuse_texture   = (type & (1 << 10)) > 0;
-  bool use_metallic_texture  = (type & (1 << 11)) > 0;
-  bool use_roughness_texture = (type & (1 << 12)) > 0;
+  bool use_diffuse_texture   = (type & uint(1 << 10)) > 0;
+  bool use_metallic_texture  = (type & uint(1 << 11)) > 0;
+  bool use_roughness_texture = (type & uint(1 << 12)) > 0;
 
   vec3 diffuse = use_diffuse_texture ?  texture(texture_diffuse, TexCoords).rgb : material.diffuse.rgb;
   float roughness  = use_roughness_texture ? texture(texture_roughness, TexCoords).r : material.roughness;
