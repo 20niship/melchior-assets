@@ -54,9 +54,9 @@ const float PI = 3.14159265359;
 in vec2 Frag_uv;
 in vec3 FragPos;
 in vec3 Normal;
-in vec4 vertColor;
 in vec2 TexCoords;
 in vec3 vertexColor;
+in vec4 vert_index;
 
 struct CuttingPlane{
   vec3 norm;
@@ -275,6 +275,9 @@ void main(){
   }else if(use_depth_color){
     float depth = gl_FragCoord.z / gl_FragCoord.w / 100.0;
     FragColor.rgb = depthmap(depth);
+  }else if(use_index_color){
+    FragColor.rgb = vert_index.rgb;
+    FragColor.a = 1.0;
   }
 
   if(shading.type == SHADING_WIREFRAME){

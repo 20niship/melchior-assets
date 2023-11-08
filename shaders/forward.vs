@@ -8,7 +8,9 @@ out vec3 FragPos;
 out vec2 TexCoords;
 out vec3 Normal;
 out vec3 vertexColor;
+out vec4 vert_index;
 
+uniform float mesh_index;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 proj;
@@ -21,6 +23,14 @@ struct CuttingPlane{
 };
 uniform CuttingPlane plane_clipping;
 out float cutting_plane_dist;
+
+vec3 unpackColor(float f){
+  vec3 color;
+  color.r = floor(f / 65536);
+  color.g = floor((f - color.r * 65536) / 256.0);
+  color.b = floor(f - color.r * 65536 - color.g * 256.0);
+  return color / 255.0;
+}
 
 void main(){
     vec4 worldPos = model * vec4(position, 1.0);
@@ -35,6 +45,8 @@ void main(){
     TexCoords = vuv;
     vertexColor = color / 255.0;
     cutting_plane_dist = dot(plane_clipping.norm, worldPos.xyz - plane_clipping.pos);
+
+    vert_index = vec4(unpackColor(float(gl_VertexID)).rgb, mesh_index / 255.0);
 }
 
 
