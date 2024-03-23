@@ -241,6 +241,7 @@ void main(){
   bool use_uv_color     = lower == 3 || shading.type == SHADING_UV;
   bool use_index_color  = lower == 4 || shading.type == SHADING_INDEX;
   bool force_base_color = lower == 6;
+  bool vertex_pbr       = lower == 8;
 
   bool use_diffuse_texture   = (type & uint(1 << 10)) > 0;
   bool use_metallic_texture  = (type & uint(1 << 11)) > 0;
@@ -252,37 +253,24 @@ void main(){
 
   // FragColor = vec4(diffuse, 1.0);
 #ifdef MELCHIOR_PLATFORM_MACOS
-  FragColor.rgb = vec3(0.0);
+  FragColor.rgb = phone_lighting(diffuse);
 #else
   FragColor.rgb = main_lighting(diffuse, roughness, metallic, 1.0);
 #endif
-  FragColor.rgb += diffuse * shading.ambient;
+  FragColor.rgb += vec3(0.1)* shading.ambient;
 
-  if(shading.type == SHADING_SOLID){
-    FragColor.rgb += phone_lighting(diffuse);
-  }
-
-  if(force_base_color || shading.type== SHADING_PLANE) FragColor.rgb = diffuse;
   FragColor.a = 1.0;
 
-  if(use_vertex_color){
-    FragColor.rgb = vertexColor.rgb;
-  }if(use_normal_color){
-    vec3 normal_color = normalize(Normal.xyz)*0.5 + 0.5;
-    FragColor.rgb = normal_color;
-  }else if(use_uv_color){
-    FragColor.rgb = vec3(TexCoords, 0.0);
-  }else if(use_depth_color){
-    float depth = gl_FragCoord.z / gl_FragCoord.w / 100.0;
-    FragColor.rgb = depthmap(depth);
-  }else if(use_index_color){
-    FragColor.rgb = vert_index.rgb;
-    FragColor.a = 1.0;
-  }
+  if(vertex_pbr) FragColor.rgb = phone_lighting(vertexColor.rgb) + vertexColor.rgb / 3.0;
+  else if(force_base_color || shading.type== SHADING_PLANE) FragColor.rgb = diffuse;
 
-  if(shading.type == SHADING_WIREFRAME){
-    FragColor.rgb = shading.wireframe_color;
-  }
+  if(use_vertex_color)      FragColor.rgb = vertexColor.rgb;
+  else if(use_normal_color) FragColor.rgb = normalize(Normal.xyz)*0.5 + 0.5;
+  else if(use_uv_color)     FragColor.rgb = vec3(TexCoords, 0.0);
+  else if(use_depth_color)  FragColor.rgb = depthmap(gl_FragCoord.z / gl_FragCoord.w / 100.0);
+  else if(use_index_color)  FragColor.rgb = vert_index.rgb;
+  
+  if(shading.type == SHADING_WIREFRAME) FragColor.rgb = shading.wireframe_color;
 
   if(plane_clipping.enabled > 0){
     if(abs(cutting_plane_dist) < 0.03){
