@@ -266,10 +266,10 @@ void main(){
   else if(force_base_color || shading.type== SHADING_PLANE) FragColor.rgb = diffuse;
 
   if(use_vertex_color)      FragColor.rgb = vertexColor.rgb;
-  else if(use_normal_color) FragColor.rgb = normalize(Normal.xyz)*0.5 + 0.5;
-  else if(use_uv_color)     FragColor.rgb = vec3(TexCoords, 0.0);
-  else if(use_depth_color)  FragColor.rgb = depthmap(gl_FragCoord.z / gl_FragCoord.w / 100.0);
-  else if(use_index_color)  FragColor.rgb = vert_index.rgb;
+  if(use_normal_color) FragColor.rgb = normalize(Normal.xyz)*0.5 + 0.5;
+  if(use_uv_color)     FragColor.rgb = vec3(TexCoords, 0.0);
+  if(use_depth_color)  FragColor.rgb = depthmap(gl_FragCoord.z / gl_FragCoord.w / 100.0);
+  if(use_index_color)  FragColor.rgb = vert_index.rgb;
   
   if(shading.type == SHADING_WIREFRAME) FragColor.rgb = shading.wireframe_color;
 
