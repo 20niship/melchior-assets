@@ -260,7 +260,8 @@ void main(){
   FragColor.rgb += vec3(0.1)* shading.ambient;
 
   FragColor.a = 1.0;
-
+  
+  if(shading.type == SHADING_SOLID) FragColor.rgb = phone_lighting(diffuse) + diffuse * shading.ambient;
   if(vertex_pbr) FragColor.rgb = phone_lighting(vertexColor.rgb) + vertexColor.rgb / 3.0;
   else if(force_base_color || shading.type== SHADING_PLANE) FragColor.rgb = diffuse;
 
