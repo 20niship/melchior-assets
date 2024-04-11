@@ -156,7 +156,6 @@ vec3 calc_light(vec3 light_pos, vec3 light_color, float roughness, vec3 N, vec3 
 }
 
 vec3 main_lighting(vec3 base_color, float roughness, float metallic, float ao){		
-  vec3 viewDir  = normalize(viewPos - FragPos);
   vec3 albedo = pow(base_color, vec3(2.2));
        
   // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 
@@ -172,8 +171,8 @@ vec3 main_lighting(vec3 base_color, float roughness, float metallic, float ao){
   // reflectance equation
   vec3 Lo = vec3(0.0);
   for(int i = 0; i < NR_LIGHTS; ++i){
-    float distance = length(lights[i].Position - FragPos);
-   float attenuation = 1.0 / (1.0 + lights[i].Linear * distance + lights[i].Quadratic * distance * distance);
+    float d = length(lights[i].Position - FragPos);
+   float attenuation = 1.0 / (1.0 + lights[i].Linear * d + lights[i].Quadratic * d * d);
     //float attenuation = 1.0 / (distance * distance);
     vec3 l = calc_light(lights[i].Position, lights[i].Color.rgb*lights[i].intensity , roughness, N, V, albedo, metallic, F0, attenuation);
     Lo += max(l, 0);
@@ -187,6 +186,8 @@ vec3 main_lighting(vec3 base_color, float roughness, float metallic, float ao){
   vec3 kD = 1.0 - kS;
   kD *= 1.0 - metallic;	  
   
+#if 0
+  vec3 irradiance = vec3(1.0);
   vec3 irradiance = texture(irradianceMap, N).rgb;
   vec3 diffuse      = irradiance * albedo;
   
@@ -197,6 +198,7 @@ vec3 main_lighting(vec3 base_color, float roughness, float metallic, float ao){
   vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
   // Lo += (kD * diffuse + specular) * ao;
+#endif
 
   // vec3 color = ambient + Lo;
   vec3 color = Lo;
@@ -251,12 +253,7 @@ void main(){
   float roughness  = use_roughness_texture ? texture(texture_roughness, TexCoords).r : material.roughness;
   float metallic = use_metallic_texture ? texture(texture_metallic, TexCoords).r : material.metallic;
 
-  // FragColor = vec4(diffuse, 1.0);
-#ifdef MELCHIOR_PLATFORM_MACOS
-  FragColor.rgb = phone_lighting(diffuse);
-#else
   FragColor.rgb = main_lighting(diffuse, roughness, metallic, 1.0);
-#endif
   FragColor.rgb += vec3(0.1)* shading.ambient;
 
   FragColor.a = 1.0;
