@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<robot name="3dof_robot_arm_scaled">
+
+  <!-- Base link -->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="1 1 2"/> <!-- Base link dimensions (x, y, z) scaled by 10 -->
+      </geometry>
+    </visual>
+  </link>
+
+  <!-- First joint and link -->
+  <joint name="joint1" type="revolute">
+    <origin xyz="0 0 1"/> <!-- Joint origin relative to the base link, scaled by 10 -->
+    <parent link="base_link"/>
+    <child link="link1"/>
+    <axis xyz="0 0 1"/> <!-- Joint axis (z-axis rotation) -->
+    <limit lower="-1.57" upper="1.57" effort="100" velocity="1"/> <!-- Joint limits, scaled by 10 -->
+  </joint>
+  <link name="link1">
+    <visual>
+      <geometry>
+        <box size="0.5 0.5 4"/> <!-- Link dimensions (x, y, z) scaled by 10 -->
+      </geometry>
+    </visual>
+  </link>
+
+  <!-- Second joint and link -->
+  <joint name="joint2" type="revolute">
+    <origin xyz="0 0 2"/> <!-- Joint origin relative to link1, scaled by 10 -->
+    <parent link="link1"/>
+    <child link="link2"/>
+    <axis xyz="0 1 0"/> <!-- Joint axis (y-axis rotation) -->
+    <limit lower="-1.57" upper="1.57" effort="100" velocity="1"/> <!-- Joint limits, scaled by 10 -->
+  </joint>
+  <link name="link2">
+    <visual>
+      <origin xyz="0 0 3" rpy="0 0 0"/>
+      <geometry> <box size="0.5 0.5 6"/> </geometry>
+    </visual>
+  </link>
+
+  <joint name="joint3" type="revolute">
+    <origin xyz="0 0 6"/> 
+    <parent link="link2"/>
+    <child link="link3"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.57" upper="1.57" effort="100" velocity="1"/>
+  </joint>
+  <link name="link3">
+    <visual> 
+      <geometry> <box size="0.3 0.3 4"/> </geometry> 
+      <origin xyz="0 0 2" rpy="0 0 0"/>
+    </visual>
+  </link>
+
+  <joint name="joint-hand" type="revolute">
+    <origin xyz="0 0 4"/> 
+    <parent link="link3"/>
+    <child link="hand"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.57" upper="1.57" effort="100" velocity="1"/>
+  </joint>
+  <link name="hand">
+    <visual> 
+      <geometry> <cylinder radius="0.4" length="0.8"/> </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </visual>
+  </link>
+</robot>
+
