@@ -36,6 +36,14 @@
     <visual><geometry><mesh filename="meshes/small_crane_cylinder.glb"/></geometry></visual>
   </link>
 
+  <link name="support1">
+    <visual><geometry><mesh filename="meshes/support1.glb"/></geometry></visual>
+  </link>
+  <link name="support2">
+    <visual><geometry><mesh filename="meshes/support2.glb"/></geometry></visual>
+  </link>
+
+
   <joint name="crane_yaw" type="revolute">
     <parent link="base_link"/>
     <child link="crane_yaw"/>
@@ -79,5 +87,19 @@
     <origin xyz="0.0 0.0 0.0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-80" upper="-10"/>
+  </joint>
+
+  <joint name="support1" type="fixed">
+    <parent link="base_link"/>
+    <child link="support1"/>
+    <origin xyz="8.9 -26.1 11.85"/>
+  </joint>
+
+  <joint name="support2" type="revolute">
+    <parent link="support1"/>
+    <child link="support2"/>
+    <origin xyz="-9.48 -3.85 0.0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-1.75" upper="1.75"/>
   </joint>
 </robot>
