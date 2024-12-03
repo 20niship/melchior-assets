@@ -1,0 +1,38 @@
+<robot name="test_robot">
+  <link name="crane_tower">
+    <visual><geometry><mesh filename="meshes/crane_tower.glb"/></geometry></visual>
+  </link>
+  <link name="crane_up">
+    <visual><geometry><mesh filename="meshes/tower_up.glb"/></geometry></visual>
+  </link>
+  <link name="crane_yaw">
+    <visual><geometry><mesh filename="meshes/crane_yaw.glb"/></geometry></visual>
+  </link>
+  <link name="crane_boom">
+    <visual><geometry><mesh filename="meshes/crane_boom.glb"/></geometry></visual>
+  </link>
+
+  <joint name="crane_up" type="prismatic">
+    <parent link="crane_tower"/>
+    <child  link="crane_up"/>
+    <origin xyz="0.0 0.0 27.422" rpy="0 0 0"/>   
+    <axis xyz="0 0 1"/>
+    <limit lower="-10" upper="2" />
+  </joint>
+
+  <joint name="crane_yaw" type="revolute">
+    <parent link="crane_up"/>
+    <child  link="crane_yaw"/>
+    <origin xyz="0.0 0.0 2.54" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-6.2" upper="6.2" />
+  </joint>
+
+  <joint name="crane_boom" type="revolute">
+    <parent link="crane_yaw"/>
+    <child  link="crane_boom"/>
+    <origin xyz="0.0 0.0 1.1987" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.5" upper="0.0" />
+  </joint>
+</robot>
