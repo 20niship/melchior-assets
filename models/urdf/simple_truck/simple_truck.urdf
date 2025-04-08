@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<robot name="simple_truck">
+  <link name="main">
+    <visual><geometry> <mesh filename="meshes/main.glb"/> </geometry></visual>
+  </link>
+  <link name="tire1">
+    <visual><geometry> <mesh filename="meshes/tire1.glb"/> </geometry></visual>
+  </link>
+  <link name="tire2">
+    <visual><geometry> <mesh filename="meshes/tire2.glb"/> </geometry></visual>
+  </link>
+  <joint name="tire1" type="revolute">
+    <parent link="main"/>
+    <child link="tire1"/>
+    <origin xyz="11.3 3.0 1.62" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-1.00" upper="1.00" effort="0" velocity="1.0"/>
+  </joint>
+  <joint name="tire2" type="revolute">
+    <parent link="main"/>
+    <child link="tire2"/>
+    <axis xyz="0 0 1"/>
+    <origin xyz="11.3 -3.0 1.62" rpy="0 0 0"/>
+    <limit lower="-1.0" upper="1.0" effort="0" velocity="1.0"/>
+  </joint>
+  <melchior>
+    <camera name="camera_driver" link="main">
+      <clip near="0.1" far="100" />
+      <origin xyz="1 0 4" target="0 5 2" />
+    </camera>
+  </melchior>
+</robot>
